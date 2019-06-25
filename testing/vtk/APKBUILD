@@ -1,0 +1,45 @@
+# Contributor: Kunal Tyagi <tyagi.kunal@live.com>
+# Maintainer:
+pkgname="vtk"
+pkgver="8.2.0"
+pkgrel=0
+pkgdesc="Visualization Toolkit"
+url="https://www.vtk.org/"
+arch="all"
+license="BSD-3-Clause"
+depends="glfw-dev libxt-dev libexecinfo-dev"
+makedepends="cmake"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/kitware/$pkgname/archive/$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+        cd "$builddir"
+
+        mkdir build && cd build
+        cmake .. \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DBUILD_SHARED_LIBS=ON
+        make
+}
+
+check() {
+	cd "$builddir"
+	make test
+}
+
+tests() {
+	cd "$builddir"/tests
+	mkdir -p "$subpkgdir"/usr/share/$pkgname
+	cp -rf "$builddir"/tests "$subpkgdir"/usr/share/$pkgname
+}
+
+package() {
+        cd "$builddir"/build
+        make DESTDIR="$pkgdir" install
+}
+
+
+sha512sums="fd1d9c2872baa6eca7f8105b0057b56ec554e9d5eaf25985302e7fc032bdce72255d79e3f5f16ca50504151bda49cb3a148272ba32e0f410b4bdb70959b8f3f4 vtk-8.2.0.tar.gz"
